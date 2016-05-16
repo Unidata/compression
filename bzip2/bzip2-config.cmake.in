@@ -1,0 +1,12 @@
+# - Config file for the BZIP2 package
+# It defines the following variables
+#  BZIP2_INCLUDE_DIRS - include directories for BZIP2
+#  BZIP2_LIBRARIES    - libraries to link against
+#  BZIP2_EXECUTABLE   - the bar executable
+
+#get_filename_component(BZIP2_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(PREFIX @CMAKE_INSTALL_PREFIX@)
+set(BZIP2_INCLUDE_DIRS ${PREFIX}/include/bzlib.h)
+set(BZIP2_LIBRARIES ${PREFIX}/lib/libbz2.dll.a)
+set(BZIP2_INCLUDE_DIR ${BZIP2_INCLUDE_DIRS})
+set(BZIP2_LIBRARY ${BZIP2_LIBRARIES})

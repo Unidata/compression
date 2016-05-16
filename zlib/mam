@@ -1,0 +1,53 @@
+# Copyright 2009, UCAR/Unidata and OPeNDAP, Inc.
+# See the COPYRIGHT file for more information.
+
+AUTOMAKE_OPTIONS = foreign
+ACLOCAL_AMFLAGS = -I conf
+
+AM_LDFLAGS = 
+AM_CFLAGS = -Wall -g -O0 -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+
+lib_LTLIBRARIES = libz.la
+
+include_HEADERS = zlib.h
+
+SRC=\ 
+adler32.c \
+crc32.c \
+deflate.c \
+infback.c \
+inffast.c \
+inflate.c \
+inftrees.c \
+trees.c \
+zutil.c \
+compress.c \
+uncompr.c \
+gzclose.c \
+gzlib.c \
+gzread.c \
+gzwrite.c
+
+HDRS=\
+crc32.h \
+deflate.h \
+gzguts.h \
+inffast.h \
+inffixed.h \
+inflate.h \
+inftrees.h \
+trees.h \
+zconf.h \
+zlib.h \
+zutil.h
+
+libz_la_SOURCES = ${SRC} ${HDRS}
+
+libz_la_LDFLAGS = -no-undefined -Wl,--output-def,zlib.dll
+
+libz_la_CPPFLAGS = -DDLL_EXPORT
+
+CLEANFILES = 
+MAINTAINERCLEANFILES = Makefile.in
+
+EXTRA_DIST = 

@@ -1,0 +1,47 @@
+#####
+
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/bzip2-config.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/bzip2-config.cmake"
+  @ONLY)
+
+SET(bzip2_SOURCES blocksort.c huffman.c crctable.c randtable.c compress.c decompress.c bzlib.c)
+
+ADD_LIBRARY(bzip2 ${bzip2_SOURCES})
+
+SET_TARGET_PROPERTIES(bzip2 PROPERTIES LINKER_LANGUAGE C)
+
+SET_TARGET_PROPERTIES(bzip2 PROPERTIES
+  VERSION ${fpcomp_LIB_VERSION}
+  SOVERSION ${fpcomp_SO_VERSION}
+  )
+
+###
+# Install the library
+###
+
+###
+# Install the header file
+###
+#INSTALL(FILES ${bzip2_SRC_DIR}/bzlib.h
+#  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#  COMPONENT headers)
+
+INSTALL(FILES bzlib.h
+	      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	      COMPONENT headers)
+
+INSTALL(FILES bzip2-config.cmake
+	      DESTINATION ${CMAKE_INSTALL_CMAKEDIR}
+	      COMPONENT headers)
+
+INSTALL(
+  TARGETS bzip2
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT libraries
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT libraries
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    COMPONENT libraries
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+

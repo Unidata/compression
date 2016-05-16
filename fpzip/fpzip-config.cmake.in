@@ -1,0 +1,11 @@
+# - Config file for the FPZIP package
+# It defines the following variables
+#  FPZIP_INCLUDE_DIRS - include directories for FPZIP
+#  FPZIP_LIBRARIES    - libraries to link against
+#  FPZIP_EXECUTABLE   - the bar executable
+
+get_filename_component(FPZIP_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(FPZIP_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/include/fpzip.h)
+set(FPZIP_LIBRARIES @CMAKE_INSTALL_PREFIX@/bin/fpzip.dll)
+set(FPZIP_INCLUDE_DIR ${FPZIP_INCLUDE_DIRS})
+set(FPZIP_LIBRARY ${FPZIP_LIBRARIES})

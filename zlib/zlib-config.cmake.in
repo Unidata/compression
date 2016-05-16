@@ -1,0 +1,12 @@
+# - Config file for the ZLIB package
+# It defines the following variables
+#  ZLIB_INCLUDE_DIRS - include directories for ZLIB
+#  ZLIB_LIBRARIES    - libraries to link against
+#  ZLIB_EXECUTABLE   - the bar executable
+
+#get_filename_component(ZLIB_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(PREFIX @CMAKE_INSTALL_PREFIX@)
+set(ZLIB_INCLUDE_DIRS ${PREFIX}/include/bzlib.h)
+set(ZLIB_LIBRARIES ${PREFIX}/lib/libbz2.dll.a)
+set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIRS})
+set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
