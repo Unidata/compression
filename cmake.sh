@@ -14,4 +14,5 @@ FLAGS="$FLAGS -DCMAKE_INSTALL_PREFIX=${PREFIX}"
 FLAGS="$FLAGS -DBUILD_SHARED_LIBS=ON"
 cmake $FLAGS ..
 cmake --build .
-cmake --build . --target install
+CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
+#cmake --build . --target install
