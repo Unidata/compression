@@ -24,3 +24,5 @@ dist-hook:
 	exit 1
 
 EXTRA_DIST = cmake_uninstall.cmake.in CMakeInstallation.cmake CMakeLists.txt README.md
+
+test: check
