@@ -16,4 +16,3 @@ INSTALL(FILES zlib-config.cmake
 	      DESTINATION ${CMAKE_INSTALL_CMAKEDIR}
 	      COMPONENT headers)
 
-ADD_SUBDIRECTORY(src)

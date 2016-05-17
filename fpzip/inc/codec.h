@@ -1,4 +1,3 @@
-#include "config.h"
 #ifndef CODEC_H
 #define CODEC_H
 

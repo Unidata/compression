@@ -2,10 +2,21 @@
 # See the COPYRIGHT file for more information.
 
 AUTOMAKE_OPTIONS = foreign
-ACLOCAL_AMFLAGS = -I conf -Iinc -Isrc
+
+ACLOCAL_AMFLAGS = -Iconf
 
 AM_LDFLAGS = 
-AM_CXXFLAGS = -Wall -I./inc
+AM_CXXFLAGS = -Wall
+
+AM_CXXFLAGS =  -Iinc -Isrc
+
+AM_CXXFLAGS += -DFPZIP_FP=@FPZIP_FP@
+if WITH_UNION
+AM_CXXFLAGS += -DWITH_UNION
+endif
+if WITH_REINTERPRET_CAST
+AM_CXXFLAGS += -DWITH_REINTERPRET_CAST
+endif
 
 #SUBDIRS = .
 

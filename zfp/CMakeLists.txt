@@ -2,7 +2,13 @@
 # zfp CMakeLists.txt file.
 #####
 
-SET(zfp_SOURCES libzfp.cpp)
+SET(zfp_SOURCES src/zfp.c src/bitstream.c
+src/decode1d.c src/decode1f.c src/decode2d.c
+src/decode2f.c src/decode3d.c src/decode3f.c
+src/encode1d.c src/encode1f.c src/encode2d.c
+src/encode2f.c src/encode3d.c src/encode3f.c)
+
+include_directories(inc)
 
 ADD_LIBRARY(zfp ${zfp_SOURCES})
 
@@ -44,4 +50,4 @@ INSTALL(FILES zfp-config.cmake
 	      DESTINATION ${CMAKE_INSTALL_CMAKEDIR}
 	      COMPONENT headers)
 
-ADD_SUBDIRECTORY(src)
+#ADD_SUBDIRECTORY(src)

@@ -33,8 +33,8 @@ AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 
-# Tell lower level makefiles we are building at the fpcomp level
-AM_CONDITIONAL(BUILD_FPCOMP, [test xyes = xyes])
+# Tell lower level makefiles we are building at the top level
+AM_CONDITIONAL(BUILD_COMPRESSION, [test xyes = xyes])
 
 ##################################################
 # Checks for additional library functions.
@@ -72,43 +72,84 @@ sleep 20
 AC_CHECK_SIZEOF(void*)
 
 ##################################################
-#which compression filters to enable
+# Check for compression algorithms to enable.
+# The algorithm operates as follows.
+# 1. A specific set of filters is defined by --with-compression=<comma list of filters>
+# 2. Using the 'all' keyword (e.g. --with-compression=all)
+#    is equivalent to --with-compression=$DFALTFILTERS
 
-AC_MSG_CHECKING([build all compressors])
-AC_ARG_ENABLE([all],
-    [AS_HELP_STRING([--enable-all],[Build all compression libraries.])])
-test "x$enable_all" = xno || enable_all=yes
-AC_MSG_RESULT([$enable_all])
-if test "x$enable_all" = xyes ; then
-enable_zip=yes
-enable_bzip2=yes
-enable_fpzip=yes
-enable_zfp=yes
+# Set of all known filters; must match arms of the case...esac below
+ALLFILTERS="zlib,bzip2,fpzip,zfp"
+# Set of filters turned on by default 
+DFALTFILTERS="$ALLFILTERS"
+
+AC_MSG_CHECKING([which specific compression filters to enable])
+AC_ARG_WITH([compression],
+              [AS_HELP_STRING([--with-compression=filter,filter,...|all],
+                              [Specify filters to look for.])],
+              [WITHFILTERS=$with_compression],
+              [WITHFILTERS="all"])
+AC_MSG_RESULT([$WITHFILTERS])
+
+# Does the user want all filters?
+if test "x$WITHFILTERS" = xall ; then
+  WITHFILTERS="$DFALTFILTERS"
 fi
 
-AC_MSG_CHECKING([build zip library])
-AC_ARG_ENABLE([zip],
-    [AS_HELP_STRING([--enable-zip],[Build zip library.])])
-test "x$enable_zip" = xyes || enable_zip=no
-AC_MSG_RESULT([$enable_zip])
+# Figure out final set of enabled filters
+if test "x$WITHFILTERS" != x ; then
+  ENABLEDFILTERS="$WITHFILTERS"
+fi
 
-AC_MSG_CHECKING([build bzip2 library])
-AC_ARG_ENABLE([bzip2],
-    [AS_HELP_STRING([--enable-bzip2],[Build bzip2 library.])])
-test "x$enable_bzip2" = xyes || enable_bzip2=no
-AC_MSG_RESULT([$enable_bzip2])
+# Set specific filter flags
+ENABLEDFILTERS=`echo $ENABLEDFILTERS | tr ',' ' '`
+# Always include zip
+ENABLEDFILTERS="zip $ENABLEDFILTERS"
+# Iterate over enabled filters
+ACTIVEFILTERS=""      
+for f in ${ENABLEDFILTERS} ; do
+      # Lower-case the filter name
+      flc=`echo $f | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz`
+      DUP=0
+      for a in ${ACTIVEFILTERS} ; do
+        if test "x$a" = "x${flc}" ; then DUP=1; break; fi
+      done
+      if test $DUP = 1 ; then continue; fi
+      case "${flc}" in
+      zip)
+        AC_DEFINE([ZIP_FILTER], [1], [if true, compile zip compression])
+	enable_zip=yes
+	;;
 
-AC_MSG_CHECKING([build fpzip library])
-AC_ARG_ENABLE([fpzip],
-    [AS_HELP_STRING([--enable-fpzip],[Build fpzip library.])])
-test "x$enable_fpzip" = xyes || enable_fpzip=no
-AC_MSG_RESULT([$enable_fpzip])
+      szip)
+        AC_DEFINE([SZIP_FILTER], [1], [if true, compile szip compression])
+	enable_szip=yes
+        ;;
 
-AC_MSG_CHECKING([build zfp library])
-AC_ARG_ENABLE([zfp],
-    [AS_HELP_STRING([--enable-zfp],[Build zfp library.])])
-test "x$enable_zfp" = xyes || enable_zfp=no
-AC_MSG_RESULT([$enable_zfp])
+      bzip2)
+        AC_DEFINE([BZIP2_FILTER], [1], [if true, compile bzip2 compression])
+	enable_bzip2=yes
+        ;;
+
+      fpzip)
+        AC_DEFINE([FPZIP_FILTER], [1], [if true, compile fpzip compression])
+	enable_fpzip=yes
+        ;;
+
+      zfp)
+        AC_DEFINE([ZFP_FILTER], [1], [if true, compile zfp compression])
+	enable_zfp=yes
+        ;;
+      *) AC_MSG_NOTICE([Unknown filter: ${flc} ; ignored])
+         ;;
+      esac
+      ACTIVEFILTERS="${ACTIVEFILTERS} ${flc}"
+      AC_MSG_NOTICE([${flc} library activated])
+ done
+AC_MSG_NOTICE([Available and enabled filters=$ACTIVEFILTERS"])
+if test "x$ACTIVEFILTERS" != x ; then
+  AC_DEFINE([ENABLE_FILTERS], [1], [if true, support zfp compression])
+fi
 
 if test "x$enable_zip" = xyes ; then
 AC_DEFINE([BUILD_ZIP], [1], [if true, build zip library])
@@ -138,7 +179,8 @@ AC_ARG_WITH([opt],
               [FP=FAST])
 FPZIP_FP=FPZIP_FP_$FP
 AC_MSG_RESULT([${FP}])
-AC_DEFINE_UNQUOTED([FPZIP_FP], $FPZIP_FP, [fpzip compression optimization])
+#AC_DEFINE_UNQUOTED([FPZIP_FP], $FPZIP_FP, [fpzip compression optimization])
+AC_SUBST([FPZIP_FP], $FPZIP_FP)
 
 AC_MSG_CHECKING([fpzip output buffer size])
 AC_ARG_WITH([output-buffer-size],
@@ -147,7 +189,8 @@ AC_ARG_WITH([output-buffer-size],
               [FPZIP_BLOCK_SIZE=$with_output_buffer_size],
               [FPZIP_BLOCK_SIZE=0x1000])
 AC_MSG_RESULT([$FPZIP_BLOCK_SIZE])
-AC_DEFINE_UNQUOTED([FPZIP_BLOCK_SIZE], [$FPZIP_BLOCK_SIZE], [fpzip Output buffer size])
+#AC_DEFINE_UNQUOTED([FPZIP_BLOCK_SIZE], [$FPZIP_BLOCK_SIZE], [fpzip Output buffer size])
+AC_SUBST([FPZIP_BLOCK_SIZE], [$FPZIP_BLOCK_SIZE])
 
 AC_MSG_CHECKING([fpzip Bitwise type conversion mechanism])
 AC_ARG_WITH([convert],
@@ -156,13 +199,10 @@ AC_ARG_WITH([convert],
 	      [],
               [with_convert=UNION])
 AC_MSG_RESULT([$with_convert])
-if test "x$with_convert" = xUNION ; then
-AC_DEFINE([WITH_UNION], [1], [Bitwise type conversion mechanism])
-fi
-if test "x$with_fpzip_convert" = xCAST ; then
-AC_DEFINE([WITH_REINTERPRET_CAST], [1], [Bitwise type conversion mechanism])
-fi
+AM_CONDITIONAL([WITH_UNION], [test x$with_convert = xUNION])
+AM_CONDITIONAL([WITH_REINTERPRET_CAST], [test x$with_convert = xCAST])
 
+if test 0 = 1 ; then
 # Modify fpzip/inc/codec.h to include config.h
 FPZIPDIR="fpzip"
 FPCODEC_H="${FPZIPDIR}/inc/codec.h"
@@ -178,6 +218,7 @@ if test -f ${FPCODEC_H} ; then
   cat ${FPCODEC_H}.save >> ${FPCODEC_H}
 else
   AC_MSG_ERROR([fpzip has changed; inc/codec.h does not exist])
+fi
 fi
 
 if test 0 = 1 ; then
@@ -196,16 +237,6 @@ else
   AC_MSG_ERROR([zfp has changed; inc/codec.h does not exist])
 fi
 fi
-
-##################################################
-dnl autoheader macros; tack some text at the top and bottom of config_dap.h.in
-
-AH_BOTTOM(
-[/* Define strcasecmp, snprintf on Win32 systems. */
-#ifdef _WIN32
-#define strcasecmp _stricmp
-#define snprintf _snprintf
-#endif])
 
 ##################################################
 # Process the Makefile.am (and other) files

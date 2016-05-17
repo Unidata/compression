@@ -1,16 +1,7 @@
 #!/bin/sh
 
-PREFIX=t:/cygwin/tmp/fpcomp
+PREFIX=/usr/local
 INSTALL=0
-case "$1" in
-install*)
-  PREFIX=t:/cygwin/usr/local
-  ;;
-*)
-  rm -fr /tmp/fpcomp
-  mkdir -p /tmp/fpcomp
-  ;;
-esac
 
 CPPATH="t:/cygwin/usr/local"
 

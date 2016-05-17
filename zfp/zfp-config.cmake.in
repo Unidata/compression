@@ -1,0 +1,11 @@
+# - Config file for the ZFP package
+# It defines the following variables
+#  ZFP_INCLUDE_DIRS - include directories for ZFP
+#  ZFP_LIBRARIES    - libraries to link against
+#  ZFP_EXECUTABLE   - the bar executable
+
+get_filename_component(ZFP_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(ZFP_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/include/zfp.h)
+set(ZFP_LIBRARIES @CMAKE_INSTALL_PREFIX@/bin/zfp.dll)
+set(ZFP_INCLUDE_DIR ${ZFP_INCLUDE_DIRS})
+set(ZFP_LIBRARY ${ZFP_LIBRARIES})

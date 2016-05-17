@@ -1,9 +1,11 @@
-#####
+
 # fpzip CMakeLists.txt file.
 #####
 
-SET(fpzip_SOURCES error.cpp
-  rcdecoder.cpp rcencoder.cpp rcqsmodel.cpp read.cpp write.cpp)
+SET(fpzip_SOURCES src/error.cpp
+  src/rcdecoder.cpp src/rcencoder.cpp src/rcqsmodel.cpp src/read.cpp src/write.cpp)
+
+include_directories(inc)
 
 ADD_DEFINITIONS(-DFPZIP_BLOCK_SIZE=${FPZIP_BLOCK_SIZE})
 ADD_DEFINITIONS(-DFPZIP_FP=${FPZIP_FP})
@@ -49,5 +51,3 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/fpzip-config.cmake.in"
 INSTALL(FILES fpzip-config.cmake
 	      DESTINATION ${CMAKE_INSTALL_CMAKEDIR}
 	      COMPONENT headers)
-
-ADD_SUBDIRECTORY(src)

@@ -5,31 +5,17 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 #######
-# Project Name: fpcomp
+# Project Name: compression
 #######
-PROJECT(fpcomp CXX C)
-SET(PACKAGE "fpcomp" CACHE STRING "")
+PROJECT(compression CXX C)
+SET(PACKAGE "compression" CACHE STRING "")
 
-##
-# Set some utility variables.
-##
-SET(fpzip_SRC_DIR ${fpcomp_SOURCE_DIR}/fpzip-1.1.0)
-SET(zfp_SRC_DIR ${fpcomp_SOURCE_DIR}/zfp-0.2.1)
-SET(bzip2_SRC_DIR ${fpcomp_SOURCE_DIR}/bzip2-1.0.6)
-SET(zip_SRC_DIR ${fpcomp_SOURCE_DIR}/zlib-1.2.8)
+SET(fpzip_SRC_DIR ${compression_SOURCE_DIR}/fpzip)
+SET(zfp_SRC_DIR ${compression_SOURCE_DIR}/zfp)
+SET(bzip2_SRC_DIR ${compression_SOURCE_DIR}/bzip2)
+SET(zip_SRC_DIR ${compression_SOURCE_DIR}/zlib)
 
 #######
-# VERSION INFO:
-#
-# Just setting to 1.0.0 for now.
-#######
-SET(FP_VERSION_MAJOR 1)
-SET(FP_VERSION_MINOR 0)
-SET(FP_VERSION_PATCH 0)
-SET(FP_VERSION_NOTE  "")
-SET(fpcomp_VERSION ${FP_VERSION_MAJOR}.${FP_VERSION_MINOR}.${FP_VERSION_PATCH}${FP_VERSION_NOTE})
-SET(fpcomp_SO_VERSION 1)
-SET(fpcomp_LIB_VERSION 1.0.0)
 ##
 # Get system configuration, Use it to determine osname, os release, cpu. These
 # will be used when committing to CDash.
@@ -111,6 +97,7 @@ ENDIF()
 # Utility Macros.
 #########
 
+###
 # Are these actually used?
 ###
 # A macro to check if a C linker supports a particular flag.
@@ -263,35 +250,33 @@ SET(FPZIP_CONV -DWITH_FPZIP_UNION CACHE STRING "Bitwise type coversion mechanism
 ###
 # Enable compression libraries.
 ###
-OPTION(ENABLE_ALL "Build all compression libraries." OFF)
 
-IF(ENABLE_ALL)
-  SET(ENABLE_FPZIP ON)
-  SET(ENABLE_ZFP ON)
-  SET(ENABLE_BZIP2 ON)
-  SET(ENABLE_ZIP ON)
-ENDIF(ENABLE_ALL)
+SET(ALLFILTERS "zlib szip bzip2 fpzip zfp")
+SET(DFALTFILTERS "zlib bzip2 fpzip zfp")
 
-OPTION(ENABLE_FPZIP "Build the fpzip library." ON)
-OPTION(ENABLE_ZFP "Build the zfp library." ON)
-OPTION(ENABLE_BZIP2 "Build the bzip2 library." ON)
-OPTION(ENABLE_ZIP "Build the zip library." ON)
+OPTION(WITH_COMPRESS "List of compressions to use or 'all'" "all")
 
-IF(ENABLE_FPZIP)
-  ADD_SUBDIRECTORY(${fpzip_SRC_DIR})
-ENDIF(ENABLE_FPZIP)
+string(TOUPPER ${WITH_COMPRESS} WITHFILTERS)
 
-IF(ENABLE_ZFP)
-  ADD_SUBDIRECTORY(${zfp_SRC_DIR})
-ENDIF(ENABLE_ZFP)
+IF(NOT WITH_COMPRESS)
+SET(WITHFILTERS "ALL")
+ENDIF()
 
-IF(ENABLE_BZIP2)
-  ADD_SUBDIRECTORY(${bzip2_SRC_DIR})
-ENDIF(ENABLE_BZIP2)
+string(COMPARE EQUAL "ALL" "${WITHFILTERS}" ISALL)
+IF(${ISALL})
+  SET(WITHFILTERS ${DFALTFILTERS})
+ENDIF()
 
-IF(ENABLE_ZIP)
-  ADD_SUBDIRECTORY(${zip_SRC_DIR})
-ENDIF(ENABLE_ZIP)
+string(TOUPPER ${WITHFILTERS} WITHFILTERS)
+string(REPLACE "," " " WITHFILTERS ${WITHFILTERS})
+string(REPLACE " " ";" WITHFILTERS ${WITHFILTERS})
+
+FOREACH(A ${WITHFILTERS})
+    SET(ACTIVEFILTERS "${ACTIVEFILTERS} ${A}")
+    SET(ENABLE_${A} ON)
+    string(TOLOWER ${A} LCA)
+    ADD_SUBDIRECTORY(${LCA})
+ENDFOREACH()
 
 ##########
 # End user options
@@ -316,9 +301,6 @@ INCLUDE(InstallRequiredSystemLibraries)
 ###
 # Create pkgconfig files.
 ###
-
-
-
 # Set
 SET(prefix ${CMAKE_INSTALL_PREFIX})
 SET(exec_prefix ${CMAKE_INSTALL_PREFIX})
