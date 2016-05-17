@@ -6,9 +6,3 @@ compiler:
   - clang
 install:
   - autoreconf -i --force
-  - mkdir build
-  - cd build
-  - cmake ..
-  - cmake --build .
-  - CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
-  - cd ..
