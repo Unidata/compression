@@ -81,7 +81,7 @@ AC_CHECK_SIZEOF(void*)
 # Set of all known filters; must match arms of the case...esac below
 ALLFILTERS="zlib,bzip2,fpzip,zfp"
 # Set of filters turned on by default 
-DFALTFILTERS="$ALLFILTERS"
+DFALTFILTERS="bzip2,fpzip,zfp"
 
 AC_MSG_CHECKING([which specific compression filters to enable])
 AC_ARG_WITH([compression],
@@ -103,8 +103,6 @@ fi
 
 # Set specific filter flags
 ENABLEDFILTERS=`echo $ENABLEDFILTERS | tr ',' ' '`
-# Always include zip
-ENABLEDFILTERS="zip $ENABLEDFILTERS"
 # Iterate over enabled filters
 ACTIVEFILTERS=""      
 for f in ${ENABLEDFILTERS} ; do
